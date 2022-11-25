@@ -8,7 +8,18 @@
     <Description>ApiKey authentication for .NET</Description>
     <Copyright>DAENET GmbH</Copyright>
     <PackageProjectUrl>https://github.com/daenetCorporation/apikeyauthenticator</PackageProjectUrl>
+    <Title>ApiKey Authenticator</Title>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Version>1.0.2</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE" Link="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 
 

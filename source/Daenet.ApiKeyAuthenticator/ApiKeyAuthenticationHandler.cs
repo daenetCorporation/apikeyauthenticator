@@ -12,9 +12,11 @@ using System.Threading.Tasks;
 
 namespace Daenet.ApiKeyAuthenticator
 {
+    /// <summary>
+    /// Provides the interface for a component that will deliver the list of roles of the principal.
+    /// </summary>
     public interface IRoleGetter
-    {
-        Task<ICollection<string>> GetRoles(string userIdentifier);
+    {        Task<ICollection<string>> GetRoles(string userIdentifier);
     }
 
     /// <summary>
@@ -39,6 +41,7 @@ namespace Daenet.ApiKeyAuthenticator
         /// <param name="encoder"></param>
         /// <param name="clock"></param>
         /// <param name="cfg"></param>
+        /// <param name="roleGetter">The action used to return the list of roles of the principal.</param>
         public ApiKeyAuthenticationHandler(
             IOptionsMonitor<ValidateApiKeyOptions> options,
             ILoggerFactory logger,

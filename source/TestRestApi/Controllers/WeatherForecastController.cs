@@ -44,5 +44,15 @@ namespace TestRestApi.Controllers
             })
             .ToArray();
         }
+
+
+        [HttpGet()]
+        [Route("anonymous")]
+        [AllowAnonymous()]
+        [Authorize(Roles = "admin, contributor")]
+        public string Ping()
+        {
+            return DateTime.UtcNow.ToString(); 
+        }
     }
 }
