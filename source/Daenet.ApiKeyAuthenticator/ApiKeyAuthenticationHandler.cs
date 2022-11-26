@@ -64,6 +64,8 @@ namespace Daenet.ApiKeyAuthenticator
         {
             StringValues keyValue;
 
+            //
+            // This is the case when the Authorization is required and header does not contain the ApiKey.
             if (!Request.Headers.TryGetValue(ApiKeyHeaderName, out keyValue))
             {
                 return AuthenticateResult.Fail($"Header '{ApiKeyHeaderName}' not found.");

@@ -1,0 +1,95 @@
+{
+	"info": {
+		"_postman_id": "7b1383a0-18d5-4187-a027-ea0ba574079b",
+		"name": "ApiKeyAuthenticator",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1207196"
+	},
+	"item": [
+		{
+			"name": "Invoke Anonymus Operation",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{uri}}/WeatherForecast",
+					"host": [
+						"{{uri}}"
+					],
+					"path": [
+						"WeatherForecast"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Invoke Authorized Operation",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "type anything hEre 123",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "ApiKey",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{uri}}/WeatherForecast/authorized",
+					"host": [
+						"{{uri}}"
+					],
+					"path": [
+						"WeatherForecast",
+						"authorized"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "uri",
+			"value": "https://localhost:7102",
+			"type": "string"
+		}
+	]
+}

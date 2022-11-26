@@ -72,58 +72,7 @@ namespace TestRestApi
             app.Run();
         }
 
-        /*
-        private static void AddRateLimiter(WebApplicationBuilder builder, ApiKeyConfig apiKeyCfg)
-        {
-            var jwtPolicyName = "tokenpolicy";
-
-            builder.Services.AddRateLimiter(limiterOptions =>
-            {
-                limiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                limiterOptions.AddPolicy(policyName: jwtPolicyName, partitioner: httpContext =>
-                {
-                    //var accessToken = httpContext.Features.Get<IAuthenticateResultFeature>()?
-                    //                      .AuthenticateResult?.Properties?.GetTokenValue("access_token")?.ToString()
-                    //                  ?? string.Empty;
-
-                    var accessToken = httpContext.Request.Headers["ApiKey"];
-
-                    if (!StringValues.IsNullOrEmpty(accessToken))
-                    {
-                        int permitLimit;
-
-                        if (apiKeyCfg.Keys.Count(k => k.PrincipalName == "FreeKey") == 1)
-                            permitLimit = 3;
-                        else
-                            permitLimit = 1000;
-
-                        return RateLimitPartition.GetFixedWindowLimiter(accessToken, _ =>
-                           new FixedWindowRateLimiterOptions
-                           {
-                               QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                               QueueLimit = permitLimit,
-                               Window = TimeSpan.FromMinutes(1),
-                               PermitLimit = permitLimit,
-                               AutoReplenishment = true
-                           });
-                    }
-                    else
-                    {
-                        return RateLimitPartition.GetFixedWindowLimiter(accessToken, _ =>
-                           new FixedWindowRateLimiterOptions
-                           {
-                               QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                               QueueLimit = 0,
-                               Window = TimeSpan.FromMinutes(1),
-                               PermitLimit = 0,
-                               AutoReplenishment = true
-                           });
-                    }
-                });
-            });
-        }
-        */
-
+    
         private static ApiKeyConfig AddApiKeyAuth(WebApplicationBuilder builder)
         {
             builder.Services.AddAuthentication(options =>

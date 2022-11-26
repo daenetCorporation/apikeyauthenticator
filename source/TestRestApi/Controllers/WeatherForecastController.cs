@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace TestRestApi.Controllers
 {
@@ -20,7 +21,7 @@ namespace TestRestApi.Controllers
         }
 
         [HttpGet()]
-        public IEnumerable<WeatherForecast> GetFree()
+        public IEnumerable<WeatherForecast> GetAnonymous()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
