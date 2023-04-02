@@ -89,6 +89,7 @@ namespace TestRestApi
             builder.Services.AddScoped<ApiKeyAuthenticationHandler>();
 
             builder.Services.AddScoped<IRoleGetter, RoleGetter>();
+            builder.Services.AddScoped<ICustomClaimsBuilder, ClaimsBuilder>();
 
             return apiKeyCfg;
         }

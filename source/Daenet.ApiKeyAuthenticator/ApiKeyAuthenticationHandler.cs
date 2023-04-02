@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -16,7 +17,16 @@ namespace Daenet.ApiKeyAuthenticator
     /// Provides the interface for a component that will deliver the list of roles of the principal.
     /// </summary>
     public interface IRoleGetter
-    {        Task<ICollection<string>> GetRoles(string userIdentifier);
+    {     
+        Task<ICollection<string>> GetRoles(string userIdentifier);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface ICustomClaimsBuilder
+    {
+        Task<IList<Claim>> GetClaims(HttpRequest request);
     }
 
     /// <summary>
@@ -29,9 +39,17 @@ namespace Daenet.ApiKeyAuthenticator
         /// <summary>
         /// The handler configuration.
         /// </summary>
-        private ApiKeyConfig cfg;
+        private ApiKeyConfig _cfg;
 
-        private IRoleGetter roleGetter;
+        /// <summary>
+        /// Delegate for getting the roles.
+        /// </summary>
+        private readonly IRoleGetter _roleGetter;
+
+        /// <summary>
+        /// The purpose of the ICustomClaimsBuilder interface is to provide a mechanism for retrieving the list of custom claims associated with a given request. 
+        /// </summary>
+        private readonly ICustomClaimsBuilder _claimBuilder;
 
         /// <summary>
         /// Creates the instance of the handler.
@@ -42,19 +60,23 @@ namespace Daenet.ApiKeyAuthenticator
         /// <param name="clock"></param>
         /// <param name="cfg"></param>
         /// <param name="roleGetter">The action used to return the list of roles of the principal.</param>
+        /// <param name="principalGetter">The purpose of the ICustomClaimsBuilder interface is to provide a mechanism for retrieving the list of custom claims associated with a given request. 
+        /// By allowing the caller to optionally pass in their own implementation of this interface, 
+        /// the constructor provides a flexible way to customize the behavior of the object without requiring any changes 
+        /// to the code itself.</param>
         public ApiKeyAuthenticationHandler(
             IOptionsMonitor<ValidateApiKeyOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
             ApiKeyConfig cfg,
-            IRoleGetter roleGetter = null)
+            IRoleGetter roleGetter = null, ICustomClaimsBuilder principalGetter = null)
             : base(options, logger, encoder, clock)
         {
-            this.roleGetter = roleGetter;
-            this.cfg = cfg;
+            this._roleGetter = roleGetter;
+            this._claimBuilder =  principalGetter;
+            this._cfg = cfg;
         }
-
 
         /// <summary>
         /// It checks for the ApiKey header and validates if the provided key is the registered in the application configuration.
@@ -71,28 +93,40 @@ namespace Daenet.ApiKeyAuthenticator
                 return AuthenticateResult.Fail($"Header '{ApiKeyHeaderName}' not found.");
             }
 
-            foreach (var item in this.cfg.Keys)
+            foreach (var item in this._cfg.Keys)
             {
                 if (item.KeyValue == keyValue)
                 {
-                    Claim claimName = new Claim(ClaimTypes.Name, item.PrincipalName);
-                    var apiKeyClaim = new Claim("apikey", keyValue);
-                    var subject = new Claim(ClaimTypes.NameIdentifier, ApiKeyHeaderName);
+                    List<Claim> claims = new List<Claim>();
+
+                    if (_claimBuilder != null)
+                    {
+                        var customClaims = await _claimBuilder.GetClaims(Request);
+                        claims.AddRange(customClaims);
+                    }
+
+                    var nameClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+                 
+                    // If custom claims do not provide the principal, then the principal name specified in the configuraiton is used.
+                    if (nameClaim is null)
+                        claims.Add(nameClaim = new Claim(ClaimTypes.Name, item.PrincipalName));
+
+                    string principalName = nameClaim.Value;
+
+                    claims.Add(new Claim(ClaimTypes.AuthenticationMethod, "ApiKey"));
 
                     ICollection<string> roles;
 
-                    var claims = new List<Claim> { apiKeyClaim, subject, claimName };
-
-                    if (roleGetter != null)
+                    if (_roleGetter != null)
                     {
-                        roles = await roleGetter.GetRoles(item.PrincipalName);
+                        roles = await _roleGetter.GetRoles(item.PrincipalName);
                         foreach (var role in roles)
                         {
                             claims.Add(new Claim(ClaimTypes.Role, role));
                         }
                     }
 
-                    var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, item.PrincipalName));
+                    var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "ApiKey"));
 
                     var ticket = new AuthenticationTicket(principal, this.Scheme.Name);
 
