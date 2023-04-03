@@ -5,12 +5,12 @@
     <RootNamespace>Daenet.ApiKeyAuthenticator</RootNamespace>
     <Authors>Damir Dobric, Armin Kalajdzija, Indraneel Pole</Authors>
     <Company>DAENET GmbH</Company>
-    <Description>ApiKey authentication for .NET</Description>
+    <Description>ApiKey authentication for .NET. API key authentication is a method of authentication that uses a unique identifier, called an API key, to authenticate the identity of a client application that is accessing an API </Description>
     <Copyright>DAENET GmbH</Copyright>
     <PackageProjectUrl>https://github.com/daenetCorporation/apikeyauthenticator</PackageProjectUrl>
     <Title>ApiKey Authenticator</Title>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Version>1.0.2</Version>
+    <Version>1.1.0</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
