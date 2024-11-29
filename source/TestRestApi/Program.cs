@@ -50,6 +50,7 @@ namespace TestRestApi
 
             var apiKeyCfg = AddApiKeyAuth(builder);
 
+            // See https://github.com/ddobric/SkuRateLimiter
             //AddRateLimiter(builder, apiKeyCfg);
 
             var app = builder.Build();

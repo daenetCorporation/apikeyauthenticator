@@ -11,12 +11,12 @@ namespace Daenet.ApiKeyAuthenticator
     {
         public override void Validate()
         {
-            base.Validate();
+           
         }
 
         public override void Validate(string scheme)
         {
-            base.Validate(scheme);
+            
         }
     }
 }
