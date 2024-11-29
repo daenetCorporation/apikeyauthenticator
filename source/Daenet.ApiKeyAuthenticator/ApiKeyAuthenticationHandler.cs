@@ -68,10 +68,9 @@ namespace Daenet.ApiKeyAuthenticator
             IOptionsMonitor<ValidateApiKeyOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            ISystemClock clock,
             ApiKeyConfig cfg,
             IRoleGetter roleGetter = null, ICustomClaimsBuilder principalGetter = null)
-            : base(options, logger, encoder, clock)
+            : base(options, logger, encoder)
         {
             this._roleGetter = roleGetter;
             this._claimBuilder =  principalGetter;
