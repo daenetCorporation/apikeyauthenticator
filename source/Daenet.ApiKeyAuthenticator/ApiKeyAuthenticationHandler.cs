@@ -17,16 +17,40 @@ namespace Daenet.ApiKeyAuthenticator
     /// Provides the interface for a component that will deliver the list of roles of the principal.
     /// </summary>
     public interface IRoleGetter
-    {     
+    {
+        [Obsolete]
         Task<ICollection<string>> GetRoles(string userIdentifier);
+
+        /// <summary>
+        /// Get roles of the given user.The roles returned by this method will be appended as 
+        /// Role-Claims to the Claims Principal. 
+        /// </summary>
+        /// <param name="userIdentifier">The name of the principal associated to the ApiKey found in the request header.</param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<ICollection<string>> GetRoles(string userIdentifier, HttpRequest request = null);
     }
 
     /// <summary>
-    /// 
+    /// Provides the interface for a component that will deliver the list of claims for the given request.
     /// </summary>
     public interface ICustomClaimsBuilder
     {
+        /// <summary>
+        /// Gets the list of claims that will be appended to the Claims Principal.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Obsolete]
         Task<IList<Claim>> GetClaims(HttpRequest request);
+
+        /// <summary>
+        /// Gets the list of claims that will be appended to the Claims Principal.
+        /// </summary>
+        /// <param name="userIdentifier">The name of the principal associated to the ApiKey found in the request header.</param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<IList<Claim>> GetClaims(string userIdentifier, HttpRequest request);
     }
 
     /// <summary>
@@ -100,7 +124,7 @@ namespace Daenet.ApiKeyAuthenticator
 
                     if (_claimBuilder != null)
                     {
-                        var customClaims = await _claimBuilder.GetClaims(Request);
+                        var customClaims = await _claimBuilder.GetClaims(item.PrincipalName, Request);
                         claims.AddRange(customClaims);
                     }
 
@@ -110,15 +134,13 @@ namespace Daenet.ApiKeyAuthenticator
                     if (nameClaim is null)
                         claims.Add(nameClaim = new Claim(ClaimTypes.Name, item.PrincipalName));
 
-                    string principalName = nameClaim.Value;
-
                     claims.Add(new Claim(ClaimTypes.AuthenticationMethod, "ApiKey"));
 
                     ICollection<string> roles;
 
                     if (_roleGetter != null)
                     {
-                        roles = await _roleGetter.GetRoles(item.PrincipalName);
+                        roles = await _roleGetter.GetRoles(item.PrincipalName, Request);
                         foreach (var role in roles)
                         {
                             claims.Add(new Claim(ClaimTypes.Role, role));
