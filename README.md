@@ -32,12 +32,12 @@ To authenticate a specific controller operation, decorate the operation with the
 [HttpGet]
 [Route("authorized")]
 [Authorize(AuthenticationSchemes = "ApiKey")]
-public IEnumerable<WeatherForecast> GetAuthorized()
+public IActionResult GetAuthorized()
 {
     // Retrieves the name of the authenticated user.
     var user = this?.User?.Identity?.Name;
 
-    // Your logic here...
+    return Ok(user);
 }
 ```
 
