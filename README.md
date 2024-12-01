@@ -79,14 +79,14 @@ public class MyApiController : ControllerBase
 }
 ```
 
-### 4 Important Note When Setting [Anonymous] at the controller level
+### 4. Important Note When Setting [Anonymous] at the controller level
 
 Do **not** decorate an entire controller with `[AllowAnonymous]` if at least one method requires API Key authentication. This would make all endpoints within the controller accessible without authentication, even if the method is decorated with the `[Authorize]` attribute.
 
-### 5 Invoking Operations with Anonymous User
+### 5. Invoking Operations with Anonymous User
 When some operation on the controller does not need to be authenticated, the *ApiKeyAuthenticateor* simply should not be activated.
 
-### 6 Impersonating User with `ApiKeyAuthenticator`
+### 6. Impersonating User with `ApiKeyAuthenticator`
 
 In certain scenarios, an API needs to act on behalf of another user, a process known as **impersonation**. Impersonation allows an API to execute actions in the context of a user specified by the client, even when the API is invoked using service credentials or the context of a different user.
 
