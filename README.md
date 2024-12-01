@@ -102,7 +102,7 @@ Benefits of this approach:
 
 In certain scenarios, an API needs to act on behalf of another user, a process known as **impersonation**. Impersonation allows an API to execute actions in the context of a user specified by the client, even when the API is invoked using service credentials or the context of a different user.
 
-To support impersonation, the client must provide the **`Impersonating`** header in the API request. The `ApiKeyAuthenticator` middleware will authenticate the invoking user and inject an additional identity into the list of identities associated with the principal. This additional identity represents the user who will be impersonated.
+To support impersonation, the client must provide the **`ImpersonatingUser`** header in the API request. The `ApiKeyAuthenticator` middleware will authenticate the invoking user and inject an additional identity into the list of identities associated with the principal. This additional identity represents the user who will be impersonated.
 
 #### Why Impersonation is Needed
 
