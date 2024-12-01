@@ -99,7 +99,23 @@ Impersonation is useful in scenarios such as:
 - **Admin Privileges**: An administrator performs actions as another user for troubleshooting or support purposes.
 - **Service Integration**: Systems with multiple roles or contexts require operations to be executed under different user identities.
 
+#### Implementation Details
 
+To enable impersonation, the client must:
+1. Authenticate using service principal or as a specific user.
+2. Include the `ImpersonatingUser` header in the API request, specifying the user to impersonate.
+
+##### Example Request:
+GET /api/resource Authorization: ApiKey <service-api-key> Impersonating: username-to-impersonate
+
+
+When the API receives a request with the `ImpersonatingUser` (this name can be changed in the configuration) header:
+1. **Authentication**: The `ApiKeyAuthenticator` validates the invoking user's API key.
+2. **Identity Injection**: After successful authentication, the middleware creates the identity of the caller (service principal or a specific user) and additionally injects an identity into the `ClaimsPrincipal` object. This identity represents the user being impersonated.
+3. **Identity Management**: The `ClaimsPrincipal` now contains:
+   - The invoking user's identity.
+   - The impersonated user's identity.
+     
 ## Summary
 
 The `Daenet.ApiKeyAuthenticator` library enables seamless integration of API Key-based authentication in .NET applications. Use this guide to implement, secure, and customize API Key authorization for your API endpoints.
