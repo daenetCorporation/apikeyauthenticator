@@ -86,7 +86,7 @@ Do **not** decorate an entire controller with `[AllowAnonymous]` if at least one
 ### 5. Invoking Operations with Anonymous User
 When some operation on the controller does not need to be authenticated, the *ApiKeyAuthenticateor* simply should not be activated.
 
-### 6. # Using: `CustomClaimsBuilder` 
+### 6. # Using `CustomClaimsBuilder` 
 The `ICustomClaimsBuilder` interface defines a robust contract for components that generate additional claims to be appended to the `ClaimsPrincipal` in the context of a given request. This interface is instrumental in extending and customizing the claims-based authentication process by dynamically creating claims based on the request and user-specific information.
 
 This approach is particularly valuable when the identity server does not supply all the claims required by the application. By leveraging a custom claims builder, developers can modify and enhance the authenticated principal's claims dynamically, enabling unparalleled flexibility in implementing fine-grained authorization mechanisms within the application.
