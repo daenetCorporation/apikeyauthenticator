@@ -81,7 +81,7 @@ public class MyApiController : ControllerBase
 
 ### 4. Important Note When Setting [Anonymous] at the controller level
 
-Do **not** decorate an entire controller with `[AllowAnonymous]` if at least one method requires API Key authentication. This would make all endpoints within the controller accessible without authentication, even if the method is decorated with the `[Authorize]` attribute.
+Do **not** decorate an entire controller with `[AllowAnonymous]` if at least one method requires API Key authentication. This would make all endpoints within the controller accessible without authentication, even if the method is decorated with the `[Authorize]` attribute. This is probably caused by the current implementaiton of authentication mechanism inside ASP.NET.
 
 ### 5. Invoking Operations with Anonymous User
 When some operation on the controller does not need to be authenticated, the *ApiKeyAuthenticateor* simply should not be activated.
