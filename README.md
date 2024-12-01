@@ -1,5 +1,5 @@
 
-# API Key Authentication with `Daenet.ApiKeyAuthenticator`
+# API Key Authentication with `Daenet ApiKeyAuthenticator`
 
 ## Overview
 
