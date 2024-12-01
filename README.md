@@ -133,5 +133,5 @@ When the API receives a request with the `ImpersonatingUser` (this name can be c
 
 The `Daenet.ApiKeyAuthenticator` library enables seamless integration of API Key-based authentication in .NET applications. Use this guide to implement, secure, and customize API Key authorization for your API endpoints.
 
-For more details, refer to the official documentation or example implementation provided in this repository.
+For more details, refer to the sample implementation provided in this repository.
 
