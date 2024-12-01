@@ -79,14 +79,26 @@ public class MyApiController : ControllerBase
 }
 ```
 
-### Important Note:
+### 4 Important Note When Setting [Anonymous] at the controller level
 
-Do **not** decorate an entire controller with `[AllowAnonymous]` if at least one method requires API Key authentication. This would make all endpoints within the controller accessible without authentication, even if the method is decorated with the [Authorization] attribute.
+Do **not** decorate an entire controller with `[AllowAnonymous]` if at least one method requires API Key authentication. This would make all endpoints within the controller accessible without authentication, even if the method is decorated with the `[Authorize]` attribute.
 
-# Invoking Operations with Anonymous User
+### 5 Invoking Operations with Anonymous User
 When some operation on the controller does not need to be authenticated, the *ApiKeyAuthenticateor* simply should not be activated.
 
-# Invoking Operations with Impersonated User
+### 6 Impersonating User with `ApiKeyAuthenticator`
+
+In certain scenarios, an API needs to act on behalf of another user, a process known as **impersonation**. Impersonation allows an API to execute actions in the context of a user specified by the client, even when the API is invoked using service credentials or the context of a different user.
+
+To support impersonation, the client must provide the **`Impersonating`** header in the API request. The `ApiKeyAuthenticator` middleware will authenticate the invoking user and inject an additional identity into the list of identities associated with the principal. This additional identity represents the user who will be impersonated.
+
+#### Why Impersonation is Needed
+
+Impersonation is useful in scenarios such as:
+- **Delegated Access**: A service or system acts on behalf of another user to perform specific operations.
+- **Admin Privileges**: An administrator performs actions as another user for troubleshooting or support purposes.
+- **Service Integration**: Systems with multiple roles or contexts require operations to be executed under different user identities.
+
 
 ## Summary
 
