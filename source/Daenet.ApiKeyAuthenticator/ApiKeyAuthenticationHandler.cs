@@ -58,8 +58,6 @@ namespace Daenet.ApiKeyAuthenticator
     /// </summary>
     public class ApiKeyAuthenticationHandler : AuthenticationHandler<ValidateApiKeyOptions>
     {
-        private const string ApiKeyHeaderName = "ApiKey";
-
         /// <summary>
         /// The handler configuration.
         /// </summary>
@@ -97,7 +95,7 @@ namespace Daenet.ApiKeyAuthenticator
             : base(options, logger, encoder)
         {
             this._roleGetter = roleGetter;
-            this._claimBuilder =  principalGetter;
+            this._claimBuilder = principalGetter;
             this._cfg = cfg;
         }
 
@@ -107,56 +105,76 @@ namespace Daenet.ApiKeyAuthenticator
         /// <returns></returns>
         protected async override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            StringValues keyValue;
+            StringValues keyValueFromHeader;
 
             //
             // This is the case when the Authorization is required and header does not contain the ApiKey.
-            if (!Request.Headers.TryGetValue(ApiKeyHeaderName, out keyValue))
+            if (!Request.Headers.TryGetValue(_cfg.ApiKeyHeaderName, out keyValueFromHeader))
             {
-                return AuthenticateResult.Fail($"Header '{ApiKeyHeaderName}' not found.");
+                return AuthenticateResult.NoResult();
             }
 
-            foreach (var item in this._cfg.Keys)
+            var apiKeyFromConfig = _cfg.Keys.FirstOrDefault(key => key.KeyValue == keyValueFromHeader);
+            if (apiKeyFromConfig != null)
             {
-                if (item.KeyValue == keyValue)
+                ClaimsIdentity identity = await CreateIdentity(apiKeyFromConfig.PrincipalName, Request);
+
+                var principal = new ClaimsPrincipal(identity);
+
+                if (Request.Headers.ContainsKey(_cfg.ImpersonatingUserHeaderName))
                 {
-                    List<Claim> claims = new List<Claim>();
-
-                    if (_claimBuilder != null)
-                    {
-                        var customClaims = await _claimBuilder.GetClaims(item.PrincipalName, Request);
-                        claims.AddRange(customClaims);
-                    }
-
-                    var nameClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-                 
-                    // If custom claims do not provide the principal, then the principal name specified in the configuraiton is used.
-                    if (nameClaim is null)
-                        claims.Add(nameClaim = new Claim(ClaimTypes.Name, item.PrincipalName));
-
-                    claims.Add(new Claim(ClaimTypes.AuthenticationMethod, "ApiKey"));
-
-                    ICollection<string> roles;
-
-                    if (_roleGetter != null)
-                    {
-                        roles = await _roleGetter.GetRoles(item.PrincipalName, Request);
-                        foreach (var role in roles)
-                        {
-                            claims.Add(new Claim(ClaimTypes.Role, role));
-                        }
-                    }
-
-                    var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "ApiKey"));
-
-                    var ticket = new AuthenticationTicket(principal, this.Scheme.Name);
-
-                    //Request.HttpContext.User.AddIdentity(appIdentity);
-                    return AuthenticateResult.Success(ticket);
+                    var impersonatingUserName = Request.Headers[_cfg.ImpersonatingUserHeaderName];
+                    ClaimsIdentity impersonatingIdentity = await CreateIdentity(impersonatingUserName, Request);
+                    principal.AddIdentity(impersonatingIdentity);
                 }
+
+                var ticket = new AuthenticationTicket(principal, this.Scheme.Name);
+
+                //Request.HttpContext.User.AddIdentity(appIdentity);
+                return AuthenticateResult.Success(ticket);
             }
 
             return AuthenticateResult.Fail("Invalid key specified.");
+        }
+
+        /// <summary>
+        /// Creates the identity for the given principal name.
+        /// </summary>
+        /// <param name="principalName"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        private async Task<ClaimsIdentity> CreateIdentity(string principalName, HttpRequest request)
+        {
+            List<Claim> claims = new List<Claim>();
+
+            if (_claimBuilder != null)
+            {
+                var customClaims = await _claimBuilder.GetClaims(principalName, request);
+                claims.AddRange(customClaims);
+            }
+
+            var nameClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+
+            // If custom claims do not provide the principal, then the principal name specified in the configuraiton is used.
+            if (nameClaim is null)
+                claims.Add(nameClaim = new Claim(ClaimTypes.Name, principalName));
+
+            claims.Add(new Claim(ClaimTypes.AuthenticationMethod, "ApiKey"));
+
+            ICollection<string> roles;
+
+            if (_roleGetter != null)
+            {
+                roles = await _roleGetter.GetRoles(principalName, Request);
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+            }
+
+            var identity = new ClaimsIdentity(claims, "ApiKey");
+
+            return identity;
         }
     }
 }

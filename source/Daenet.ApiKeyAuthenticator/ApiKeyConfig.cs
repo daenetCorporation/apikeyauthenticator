@@ -8,6 +8,16 @@ namespace Daenet.ApiKeyAuthenticator
     public class ApiKeyConfig
     {
         /// <summary>
+        /// The name of the header that contains the key. Default Value is 'ApiKey'.
+        /// </summary>
+        public string ApiKeyHeaderName { get; set; } = "ApiKey";
+
+        /// <summary>
+        /// The name of the header that contains the name of impersonating user.
+        /// </summary>
+        public string ImpersonatingUserHeaderName { get; set; } = "ImpersonatingUser";
+
+        /// <summary>
         /// The list of allowed keys and assotiated principal names
         /// </summary>
         public List<KeyDefinition> Keys { get; set; }

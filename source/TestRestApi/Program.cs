@@ -62,6 +62,8 @@ namespace TestRestApi
                 app.UseSwaggerUI();
             }
 
+            app.UseRouting();
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
@@ -78,7 +80,7 @@ namespace TestRestApi
         {
             builder.Services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = "ApiKey";
+                //options.DefaultAuthenticateScheme = "ApiKey";
             }).AddScheme<ValidateApiKeyOptions, ApiKeyAuthenticationHandler>
             ("ApiKey", op =>
             {
@@ -87,8 +89,7 @@ namespace TestRestApi
             ApiKeyConfig apiKeyCfg = new ApiKeyConfig();
             builder.Configuration.GetSection("ApiKeyConfig").Bind(apiKeyCfg);
             builder.Services.AddSingleton<ApiKeyConfig>(apiKeyCfg);
-            builder.Services.AddScoped<ApiKeyAuthenticationHandler>();
-
+           
             builder.Services.AddScoped<IRoleGetter, RoleGetter>();
             builder.Services.AddScoped<ICustomClaimsBuilder, ClaimsBuilder>();
 

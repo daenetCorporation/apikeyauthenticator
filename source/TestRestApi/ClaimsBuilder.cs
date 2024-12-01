@@ -12,19 +12,25 @@ namespace TestRestApi
 
             StringValues impersonatedUser;
 
-            if (request.Headers.TryGetValue("ImpersonateTo", out impersonatedUser))
+            if (userIdentifier == "Key1-BasicSKU")
             {
-                customClaims.Add(new Claim(ClaimTypes.Name, impersonatedUser.ToString()));
-                customClaims.Add(new Claim("ImpersonatedFrom", userIdentifier));
+                customClaims.Add(new Claim(ClaimTypes.Country, "Germany"));
+                customClaims.Add(new Claim(ClaimTypes.AuthorizationDecision, "Basic Subscription Service"));
+            }
+            else if (userIdentifier == "Key2-PremiumSKU")
+            {
+                customClaims.Add(new Claim(ClaimTypes.Country, "Germany"));
+                customClaims.Add(new Claim(ClaimTypes.AuthorizationDecision, "Premium Subscription Service"));
             }
             else
             {
-                customClaims.Add(new Claim(ClaimTypes.Name, "haso mujo"));
-            }
-
-            customClaims.Add(new Claim(ClaimTypes.NameIdentifier, "todo"));
-           
-            // Other claims here.
+                if (request.Headers.TryGetValue("ImpersonatingUser", out impersonatedUser))
+                {
+                    customClaims.Add(new Claim(ClaimTypes.Country, "Germany"));
+                    customClaims.Add(new Claim(ClaimTypes.AuthorizationDecision, "ImpersonatingUser"));
+                    customClaims.Add(new Claim("ImpersonatedFrom", userIdentifier));
+                }
+            }           
 
             return Task.FromResult<IList<Claim>>(customClaims);
         }
