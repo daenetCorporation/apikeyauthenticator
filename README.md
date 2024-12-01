@@ -86,7 +86,19 @@ Do **not** decorate an entire controller with `[AllowAnonymous]` if at least one
 ### 5. Invoking Operations with Anonymous User
 When some operation on the controller does not need to be authenticated, the *ApiKeyAuthenticateor* simply should not be activated.
 
-### 6. Impersonating User with `ApiKeyAuthenticator`
+### 6. # Using: `CustomClaimsBuilder` 
+The `ICustomClaimsBuilder` interface defines a robust contract for components that generate additional claims to be appended to the `ClaimsPrincipal` in the context of a given request. This interface is instrumental in extending and customizing the claims-based authentication process by dynamically creating claims based on the request and user-specific information.
+
+This approach is particularly valuable when the identity server does not supply all the claims required by the application. By leveraging a custom claims builder, developers can modify and enhance the authenticated principal's claims dynamically, enabling unparalleled flexibility in implementing fine-grained authorization mechanisms within the application.
+
+Benefits of this approach:
+
+- **Dynamic Claim Extension**: Generate claims dynamically based on application-specific requirements.
+- **Decoupled Logic**: Keep the identity server minimal while enriching claims on demand at the application level.
+- **Flexible Authorization**: Support advanced authorization scenarios by manipulating claims in the principal.
+- **Scalable Security**: Easily adapt claims-based logic without modifying the underlying authentication system.
+
+### 7. Impersonating User with `ApiKeyAuthenticator`
 
 In certain scenarios, an API needs to act on behalf of another user, a process known as **impersonation**. Impersonation allows an API to execute actions in the context of a user specified by the client, even when the API is invoked using service credentials or the context of a different user.
 
@@ -115,6 +127,7 @@ When the API receives a request with the `ImpersonatingUser` (this name can be c
 3. **Identity Management**: The `ClaimsPrincipal` now contains:
    - The invoking user's identity.
    - The impersonated user's identity.
+
      
 ## Summary
 
