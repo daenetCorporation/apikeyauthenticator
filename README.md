@@ -1,3 +1,4 @@
+[![NuGet](https://badge.fury.io/nu/Daenet.ApiKeyAuthenticator.svg)](https://www.nuget.org/packages/Daenet.ApiKeyAuthenticator)
 
 # API Key Authentication with `Daenet ApiKeyAuthenticator`
 
